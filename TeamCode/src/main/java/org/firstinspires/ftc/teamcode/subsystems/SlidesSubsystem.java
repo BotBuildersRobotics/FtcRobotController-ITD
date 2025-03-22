@@ -18,7 +18,7 @@ public class SlidesSubsystem extends SubsystemBase {
     private int lowChamberPosition = 150;
     private int highChamberPosition = 500;
     private int lowBasketPosition = 800;
-    private int highBasketPosition = 2150;
+    private int highBasketPosition = 870;//2150;
 
     private int dumpPosition = 800;
 
@@ -31,7 +31,9 @@ public class SlidesSubsystem extends SubsystemBase {
     //prob only want to make this number larger than 50
     private int STOWED_SLIDE_DIFFERENCE = 50;
 
-    private static final PIDFController slidePIDF = new PIDFController(0.01,0,0.0002, 0.00018);
+    //private static final PIDFController slidePIDF = new PIDFController(0.01,0,0.0002, 0.00018);
+
+    private static final PIDFController slidePIDF = new PIDFController(0.1,0,0.0002, 0.00018);
 
     public double target;
 

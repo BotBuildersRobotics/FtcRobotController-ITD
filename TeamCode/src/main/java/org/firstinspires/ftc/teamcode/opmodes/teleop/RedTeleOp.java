@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.commands.DesiredColourNeutralCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeOffCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotDownCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotUpCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeSlidesInAscentCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesInCommand;
 import org.firstinspires.ftc.teamcode.commands.OpenGripplerCommand;
 import org.firstinspires.ftc.teamcode.commands.OuttakeOnCommand;
@@ -372,6 +373,7 @@ public class RedTeleOp extends CommandOpMode {
         //go for the climb - disable the servos to prevent breakage.
         m_driveOperator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new SequentialCommandGroup(
+                        new IntakeSlidesInAscentCommand(intakeSubsystem, transferSubsystem),
                         new ParallelCommandGroup(
                                 new AscentLowRungCommand(ascentSubsystem),
                                 new SequentialCommandGroup(
@@ -379,10 +381,11 @@ public class RedTeleOp extends CommandOpMode {
                                         new InstantCommand(() ->{
                                             ascentSubsystem.disableServos();
                                         })
-                                )
-                        ),
+                                )),
                         new WaitCommand(200),
-                        new SlidesStowCommand(slidesSubsystem)
+                        new SlidesStowCommand(slidesSubsystem),
+                       // new IntakeSlidesInAscentCommand(intakeSubsystem, transferSubsystem),
+                        new IntakePivotUpCommand(intakeSubsystem, robotState)
 
                 )
         );

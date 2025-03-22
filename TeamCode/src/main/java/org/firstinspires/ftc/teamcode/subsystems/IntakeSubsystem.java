@@ -37,7 +37,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private RevColorSensorV3 colourSensor;
 
     // Define variables
-    private double intakeSlidesInPosition = 0.5;
+    private double intakeSlidesInPosition = 0.5; //0.5
+
+    private double intakeSlidesInAscentPosition = 0.75;
 
     private double intakeSlidesOutPosition = 0.1;
 
@@ -126,6 +128,13 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeRightSlide.setPosition(intakeSlidesInPosition);
     }
 
+    public void intakeSlidesInAscent() {
+        //Brings the slides in
+        intakeLeftSlide.setPosition(intakeSlidesInAscentPosition);
+        intakeRightSlide.setPosition(intakeSlidesInAscentPosition);
+    }
+
+
     public void IncrSlides(){
         double currentPos = getIntakeSlidePosition();
         //slides must be decremented
@@ -162,6 +171,9 @@ public class IntakeSubsystem extends SubsystemBase {
         return true;
     }
 
+    public boolean AreIntakeSlidesInAscent() {
+        return true;
+    }
     public void intakeSlidesOut() {
         //Brings the slides out
         intakeLeftSlide.setPosition(intakeSlidesOutPosition);
@@ -234,11 +246,18 @@ public class IntakeSubsystem extends SubsystemBase {
        NormalizedRGBA colors = colourSensor.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
 
-        //telemetry.addData("HSV", hsvValues[0]);
-        //telemetry.addData("HSV2", hsvValues[1]);
-        //telemetry.update();
+        telemetry.addData("HSV", hsvValues[0]);
+        telemetry.addData("HSV2", hsvValues[1]);
 
-        if(hsvValues[0] > 200) {
+        telemetry.update();
+
+
+        if(hsvValues[0] == 180 && hsvValues[1] == 1){
+        //    return SampleColour.NONE;
+        }
+
+
+        if(hsvValues[0] >= 180) {
             if(desiredColour == SampleColour.BLUE_OR_NEUTRAL){
                 return SampleColour.BLUE_OR_NEUTRAL;
             }

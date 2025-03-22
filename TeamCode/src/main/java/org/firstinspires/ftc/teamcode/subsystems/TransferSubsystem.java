@@ -18,7 +18,7 @@ public class TransferSubsystem extends SubsystemBase {
 
     // Define variables
     private double backwardsTransferPosition = 0;
-    private double stowedTransferPosition = 0.325;//higher number is out further from slides
+    private double stowedTransferPosition = 0.32;//0.325;//higher number is out further from slides
     private double flippedPosition = 0.85; //higher number is harder on the bar and padding
     private double middleGripplerRotation = 0.5;
     private double leftGripplerRotation = 0;
