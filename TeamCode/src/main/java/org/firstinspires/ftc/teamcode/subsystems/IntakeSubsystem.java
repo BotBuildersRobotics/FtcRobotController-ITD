@@ -9,12 +9,14 @@ import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -27,6 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private Servo intakeRightSlide;
 
     private Servo poopChute;
+    private Servo sweeper;
 
     private DigitalChannel colorPin0;
 
@@ -44,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private double intakeSlidesOutPosition = 0.1;
 
     private double intakePivotUpPosition = 0;
-    private double intakePivotDownPosition = 0.58;
+    private double intakePivotDownPosition = 1;// 0.58;
 
     private double intakePoopOpen = 0.5;
 
@@ -84,15 +87,12 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeLeftSlide = hMap.get(Servo.class, "intakeLeftSlide");
         intakeRightSlide = hMap.get(Servo.class, "intakeRightSlide");
         poopChute = hMap.get(Servo.class, "poopChute");
+        sweeper = hMap.get(Servo.class, "sweeper");
 
         colourSensor = hMap.get(RevColorSensorV3.class, "colourSensor");
 
         //TODO: Test fast mode
         ((LynxI2cDeviceSynch) colourSensor.getDeviceClient()).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
-
-
-        colorPin0 = hMap.digitalChannel.get("digital0");
-        colorPin1 = hMap.digitalChannel.get("digital1");
 
         intakeLeftPivot.setDirection(Servo.Direction.REVERSE);
 
@@ -242,31 +242,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public SampleColour getCurrentIntakeColour(){
 
-
        NormalizedRGBA colors = colourSensor.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
 
-        telemetry.addData("HSV", hsvValues[0]);
-        telemetry.addData("HSV2", hsvValues[1]);
 
+        double distance = ((DistanceSensor) colourSensor).getDistance(DistanceUnit.CM);
+
+        telemetry.addData("Green",colors.green * 100);
+        telemetry.addData("Red", colors.red * 100);
+        telemetry.addData("Blue", colors.blue * 100);
+        telemetry.addData("Distance", distance);
         telemetry.update();
 
 
-        if(hsvValues[0] == 180 && hsvValues[1] == 1){
-        //    return SampleColour.NONE;
-        }
-
-
-        if(hsvValues[0] >= 180) {
-            if(desiredColour == SampleColour.BLUE_OR_NEUTRAL){
-                return SampleColour.BLUE_OR_NEUTRAL;
-            }
-            if(desiredColour == SampleColour.AUTO_ANY){
-                return SampleColour.AUTO_ANY;
-            }
-            return SampleColour.BLUE;
-        }
-        if(hsvValues[0] >= 45 && hsvValues[0] <=110) {
+        if (colors.green * 100 > 0.9){
             if(desiredColour == SampleColour.RED_OR_NEUTRAL){
                 return SampleColour.RED_OR_NEUTRAL;
             }
@@ -276,11 +264,20 @@ public class IntakeSubsystem extends SubsystemBase {
             if(desiredColour == SampleColour.AUTO_ANY){
                 return SampleColour.AUTO_ANY;
             }
-            //telemetry.addData("FOUND", "NEUTRAL");
-            //telemetry.update();
+
             return SampleColour.NEUTRAL;
         }
-        if(hsvValues[0] >= 0 && hsvValues[1] > 0) {
+        else if(colors.blue * 100 >= 0.5) {
+            if(desiredColour == SampleColour.BLUE_OR_NEUTRAL){
+                return SampleColour.BLUE_OR_NEUTRAL;
+            }
+            if(desiredColour == SampleColour.AUTO_ANY){
+                return SampleColour.AUTO_ANY;
+            }
+            return SampleColour.BLUE;
+        }
+
+        else if(colors.red * 100 >= 0.5) {
             if(desiredColour == SampleColour.RED_OR_NEUTRAL){
                 return SampleColour.RED_OR_NEUTRAL;
             }
@@ -327,6 +324,10 @@ public class IntakeSubsystem extends SubsystemBase {
         return  desiredColour;
     }
 
+    public void TelemeteryMessage(String msg){
+        telemetry.addData("Intake Msg: ", msg);
+        telemetry.update();
+    }
 
     public void colourAwareIntake(){
 

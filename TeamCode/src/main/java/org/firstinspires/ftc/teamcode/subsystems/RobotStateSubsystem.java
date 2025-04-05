@@ -15,10 +15,16 @@ public class RobotStateSubsystem extends SubsystemBase {
       HIGH
   }
 
+  public enum PTOState{
+      ENABLED,
+      DISABLED
+  }
 
   public SlideHeight slidePosition = SlideHeight.STOW;
 
   public PivotState pivotPosition = PivotState.HIGH;
+
+  public PTOState ptoState = PTOState.DISABLED;
 
 
 }

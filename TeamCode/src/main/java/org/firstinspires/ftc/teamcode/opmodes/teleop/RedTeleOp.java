@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.AscentCloseHooksCommand;
@@ -47,6 +48,7 @@ import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 import java.util.function.BooleanSupplier;
 
 @TeleOp(name = "Red TeleOp")
+@Disabled
 public class RedTeleOp extends CommandOpMode {
 
     private DriveSubsystem m_drive;
@@ -83,8 +85,9 @@ public class RedTeleOp extends CommandOpMode {
         ascentSubsystem = new AscentSubsystem(hardwareMap);
 
 
+        ascentSubsystem.PTODriveEnabled();
 
-        m_driveCommand = new DefaultDrive(m_drive, () -> m_driveDriver.getLeftX(),  () -> m_driveDriver.getLeftY(), () -> m_driveDriver.getRightX() * 0.5 , ()-> driveSpeed);
+        m_driveCommand = new DefaultDrive(m_drive, () -> m_driveDriver.getLeftX(),  () -> m_driveDriver.getLeftY(), () -> m_driveDriver.getRightX() * 0.5 , ()-> driveSpeed, () -> robotState.ptoState == RobotStateSubsystem.PTOState.ENABLED, telemetry);
 
         register(m_drive);
         m_drive.setDefaultCommand(m_driveCommand);
@@ -100,9 +103,9 @@ public class RedTeleOp extends CommandOpMode {
         //get rid of this when not needed
         /*schedule(new RunCommand(() -> {
                 telemetry.addData("Slides:", slidesSubsystem.getCurrentSlidePos());
-                telemetry.addData("Magnet", transferSubsystem.IsTransferClosed());
-                telemetry.addData("ML", ascentSubsystem.getLeftMotorPos());
-                telemetry.addData("MR", ascentSubsystem.getRightMotorPos());
+                telemetry.addData("Target", slidesSubsystem.getTarget());
+            telemetry.addData("Magnet", transferSubsystem.IsTransferClosed());
+
                 telemetry.update();
         }
         ));*/
@@ -170,7 +173,7 @@ public class RedTeleOp extends CommandOpMode {
 
                         new TransferFlipCommand(transferSubsystem),
                         new InstantCommand(()-> {
-                            driveSpeed = 0.7;
+                            driveSpeed = 1;
                         })
                 )).whenInactive(
                 new SequentialCommandGroup(
@@ -205,9 +208,6 @@ public class RedTeleOp extends CommandOpMode {
         m_driveDriver.getGamepadButton(GamepadKeys.Button.B).whenActive(
                 new SequentialCommandGroup(
                         new OpenGripplerCommand(transferSubsystem),
-                        new InstantCommand(()-> {
-                            driveSpeed = 0.4;
-                        }),
                         new PoopChuteOpenCommand(intakeSubsystem),
                         new IntakePivotDownCommand(intakeSubsystem, robotState),
                         new ColourAwareIntakeCommand(intakeSubsystem)
@@ -220,7 +220,15 @@ public class RedTeleOp extends CommandOpMode {
                             driveSpeed = 1;
                         }),
                         new ConditionalCommand(
-                                new IntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState), // ready to transfer
+                                new ConditionalCommand(
+                                        new SequentialCommandGroup(
+                                                new IntakePivotUpCommand(intakeSubsystem,robotState),
+                                                new IntakeSlidesInCommand(intakeSubsystem, transferSubsystem)
+                                        ),
+                                        new IntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState),
+
+                                        () -> m_driveOperator.getGamepadButton(GamepadKeys.Button.A).get()
+                                ),
                                 new InstantCommand(), // do nothing, might want to intake again
                                 ()-> intakeSubsystem.hasItemInIntake()
                         )
@@ -296,24 +304,6 @@ public class RedTeleOp extends CommandOpMode {
                 new IntakeOffCommand(intakeSubsystem)
         );
 
-        m_driveOperator.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                new DesiredColourBlueCommand(intakeSubsystem)
-        );
-
-        m_driveOperator.getGamepadButton(GamepadKeys.Button.B).whenPressed(
-                new InstantCommand(() ->{intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);})
-        );
-
-        m_driveOperator.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
-                new DesiredColourNeutralCommand(intakeSubsystem)
-        );
-
-        m_driveOperator.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new InstantCommand(()-> {
-                    driveSpeed = 1;
-                })
-        );
-
         //drop the intake pivot -
         m_driveDriver.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new SequentialCommandGroup(
@@ -323,20 +313,7 @@ public class RedTeleOp extends CommandOpMode {
 
         );
 
-        //reset the hooks - not ready for climb
-        m_driveOperator.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                new SequentialCommandGroup(
-                        new InstantCommand(()->{
-                            telemetry.addData("Hooks", "Up");
-                            telemetry.update();
-                        }),
-                        new AscentOpenHooksCommand(ascentSubsystem)
-
-                )
-
-        );
-
-        //slides low basket - only when coming from the high position.
+        //move the slides to the low basket - but only when in the high position
         m_driveDriver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 new ConditionalCommand(
                         new SequentialCommandGroup(
@@ -356,6 +333,20 @@ public class RedTeleOp extends CommandOpMode {
                 )
         );
 
+        //SECONDARY CONTROLLER
+
+        //reset the hooks - not ready for climb
+        m_driveOperator.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                new SequentialCommandGroup(
+                        new InstantCommand(()->{
+                            telemetry.addData("Hooks", "Up");
+                            telemetry.update();
+                        }),
+                        new AscentOpenHooksCommand(ascentSubsystem)
+
+                )
+
+        );
 
         //operator - lift slides and put hooks into position.
         m_driveOperator.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
@@ -384,7 +375,6 @@ public class RedTeleOp extends CommandOpMode {
                                 )),
                         new WaitCommand(200),
                         new SlidesStowCommand(slidesSubsystem),
-                       // new IntakeSlidesInAscentCommand(intakeSubsystem, transferSubsystem),
                         new IntakePivotUpCommand(intakeSubsystem, robotState)
 
                 )
@@ -401,6 +391,24 @@ public class RedTeleOp extends CommandOpMode {
                     m_drive.resetHeading();
                 })
         );
+
+        //TODO: Check these out
+        m_driveOperator.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                new InstantCommand(() -> {
+                    ascentSubsystem.PTOClimbEnabled();
+                    robotState.ptoState = RobotStateSubsystem.PTOState.ENABLED;
+                })
+        );
+
+        m_driveOperator.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                new InstantCommand(() -> {
+                    ascentSubsystem.PTODriveEnabled();
+                    robotState.ptoState = RobotStateSubsystem.PTOState.DISABLED;
+                })
+        );
+
+
+
     }
 }
 

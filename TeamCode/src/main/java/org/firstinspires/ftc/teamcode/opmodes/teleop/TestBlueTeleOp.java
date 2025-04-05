@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.commands.IntakePivotDownCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotUpCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesInCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesOutCommand;
-import org.firstinspires.ftc.teamcode.commands.MiddleGripplerRotationCommand;
 import org.firstinspires.ftc.teamcode.commands.OpenGripplerCommand;
 import org.firstinspires.ftc.teamcode.commands.OuttakeOnCommand;
 import org.firstinspires.ftc.teamcode.commands.PoopChuteCloseCommand;
@@ -71,7 +70,7 @@ public class TestBlueTeleOp  extends CommandOpMode {
 
 
 
-        m_driveCommand = new DefaultDrive(m_drive, () -> m_driveDriver.getLeftX(),  () -> m_driveDriver.getLeftY(), () -> m_driveDriver.getRightX() * 0.5 , ()-> driveSpeed);
+        m_driveCommand = new DefaultDrive(m_drive, () -> m_driveDriver.getLeftX(),  () -> m_driveDriver.getLeftY(), () -> m_driveDriver.getRightX() * 0.5 , ()-> driveSpeed, ()-> false, telemetry);
 
         register(m_drive);
         m_drive.setDefaultCommand(m_driveCommand);
@@ -98,8 +97,7 @@ public class TestBlueTeleOp  extends CommandOpMode {
                     new IntakeOffCommand(intakeSubsystem),
                     new PoopChuteCloseCommand(intakeSubsystem),
                     new ParallelCommandGroup(
-                        new IntakePivotUpCommand(intakeSubsystem, robotState),
-                        new MiddleGripplerRotationCommand(transferSubsystem)
+                        new IntakePivotUpCommand(intakeSubsystem, robotState)
                     ),
                     new WaitCommand(300), //give the servos time to operate
                     new IntakeSlidesInCommand(intakeSubsystem, transferSubsystem),

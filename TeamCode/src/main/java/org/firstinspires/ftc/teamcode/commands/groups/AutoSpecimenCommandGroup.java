@@ -5,14 +5,10 @@ import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.commands.CloseGripplerCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeOffCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotDownCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotUpCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesInCommand;
-import org.firstinspires.ftc.teamcode.commands.MiddleGripplerRotationCommand;
-import org.firstinspires.ftc.teamcode.commands.PoopChuteCloseCommand;
-import org.firstinspires.ftc.teamcode.commands.SlowIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.RobotStateSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TransferSubsystem;
@@ -35,8 +31,8 @@ public class AutoSpecimenCommandGroup extends SequentialCommandGroup {
                 new IntakeOffCommand(intakeSubsystem),
 
                 new ParallelCommandGroup(
-                        new IntakePivotUpCommand(intakeSubsystem, robotState),
-                        new MiddleGripplerRotationCommand(transferSubsystem)
+                        new IntakePivotUpCommand(intakeSubsystem, robotState)
+
                 ),
 
                 new IntakeSlidesInCommand(intakeSubsystem, transferSubsystem).withTimeout(500),

@@ -18,19 +18,19 @@ public class TransferSubsystem extends SubsystemBase {
 
     // Define variables
     private double backwardsTransferPosition = 0;
-    private double stowedTransferPosition = 0.32;//0.325;//higher number is out further from slides
-    private double flippedPosition = 0.85; //higher number is harder on the bar and padding
+    private double stowedTransferPosition = 0.38;//0.32;//0.325;//higher number is out further from slides
+    private double flippedPosition = 0.88; //higher number is harder on the bar and padding
     private double middleGripplerRotation = 0.5;
     private double leftGripplerRotation = 0;
     private double rightGripplerRotation = 1;
-    private double closedGripplerPosition = 0;
-    private double openGripplerPosition = 0.5;
+    private double closedGripplerPosition = 0.63;
+    private double openGripplerPosition = 1;
 
     public TransferSubsystem(final HardwareMap hMap) {
         armLeftServo = hMap.get(Servo.class, "armLeft");
         armRightServo = hMap.get(Servo.class, "armRight");
         gripplerServo = hMap.get(Servo.class, "grippler");
-        griggleWristServo = hMap.get(Servo.class, "griggleWrist");
+        //griggleWristServo = hMap.get(Servo.class, "griggleWrist");
         magnetSensor = hMap.get(DigitalChannel.class, "magnet");
 
         magnetSensor.setMode(DigitalChannel.Mode.INPUT);
@@ -38,7 +38,7 @@ public class TransferSubsystem extends SubsystemBase {
         //armRightServo.setDirection(Servo.Direction.REVERSE);
         gripplerServo.setDirection(Servo.Direction.REVERSE);
         stowTransfer();
-        griggleWristServo.setPosition(0.5);
+        //griggleWristServo.setPosition(0.5);
         openGrippler();
     }
 

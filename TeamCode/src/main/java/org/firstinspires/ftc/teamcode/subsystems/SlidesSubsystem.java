@@ -7,18 +7,22 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class SlidesSubsystem extends SubsystemBase {
 
     //Define motors and servos
     private DcMotor verticalSlideMotor;
+
+    private DcMotor verticalslideMotor2;
 
     // Define variables
     private int stowedSlidesPosition = 0;
     private int backwardsTransferPosition = 0;
     private int lowChamberPosition = 150;
     private int highChamberPosition = 500;
-    private int lowBasketPosition = 800;
-    private int highBasketPosition = 870;//2150;
+    private int lowBasketPosition = 600;
+    private int highBasketPosition = 1100;//2150;
 
     private int dumpPosition = 800;
 
@@ -33,17 +37,23 @@ public class SlidesSubsystem extends SubsystemBase {
 
     //private static final PIDFController slidePIDF = new PIDFController(0.01,0,0.0002, 0.00018);
 
-    private static final PIDFController slidePIDF = new PIDFController(0.1,0,0.0002, 0.00018);
+    //private static final PIDFController slidePIDF = new PIDFController(0.1,0,0.0002, 0.00018);
+
+    private static final PIDFController slidePIDF = new PIDFController(0.002,0,0, 0.00025);
 
     public double target;
 
     public SlidesSubsystem(final HardwareMap hMap) {
         verticalSlideMotor = hMap.get(DcMotor.class, "verticalSlidesMotor");
         verticalSlideMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        verticalslideMotor2 = hMap.get(DcMotor.class, "verticalSlidesMotor2");
+        verticalslideMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void resetVerticalSlides(){
         verticalSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticalslideMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 
@@ -55,7 +65,9 @@ public class SlidesSubsystem extends SubsystemBase {
     }
 
     public void NoPowerSlides(){
+
         verticalSlideMotor.setPower(0);
+        verticalslideMotor2.setPower(0);
     }
 
     public double getCurrentSlidePos(){
@@ -63,13 +75,17 @@ public class SlidesSubsystem extends SubsystemBase {
     }
 
     public boolean AreSlidesStowed() {
-        return verticalSlideMotor.getCurrentPosition() < (stowedSlidesPosition + STOWED_SLIDE_DIFFERENCE);
+        return verticalSlideMotor.getCurrentPosition() < (stowedSlidesPosition + 10);
     }
 
     public void highChamberDeliver(){
         verticalSlideMotor.setTargetPosition(deliverHighChamberPosition);
         verticalSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        verticalSlideMotor.setPower(1);
+        //verticalSlideMotor.setPower(1);
+
+        verticalslideMotor2.setTargetPosition(deliverHighChamberPosition);
+        verticalslideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //verticalslideMotor2.setPower(1);
     }
 
     public boolean IsAtHighChamberDeliver(){
@@ -79,7 +95,11 @@ public class SlidesSubsystem extends SubsystemBase {
     public void backwardsTransfer() {
         verticalSlideMotor.setTargetPosition(backwardsTransferPosition);
         verticalSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        verticalSlideMotor.setPower(1);
+        //verticalSlideMotor.setPower(1);
+
+        verticalslideMotor2.setTargetPosition(backwardsTransferPosition);
+        verticalslideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //verticalslideMotor2.setPower(1);
     }
 
     public boolean AreSlidesAllowingBackwardsTransfer() {
@@ -89,7 +109,11 @@ public class SlidesSubsystem extends SubsystemBase {
     public void lowChamber() {
         verticalSlideMotor.setTargetPosition(lowChamberPosition);
         verticalSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        verticalSlideMotor.setPower(1);
+        //verticalSlideMotor.setPower(1);
+
+        verticalslideMotor2.setTargetPosition(lowChamberPosition);
+        verticalslideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //verticalslideMotor2.setPower(1);
     }
 
     public boolean IsAtLowChamber() {
@@ -98,12 +122,21 @@ public class SlidesSubsystem extends SubsystemBase {
     public void highChamber() {
         verticalSlideMotor.setTargetPosition(highChamberPosition);
         verticalSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        verticalSlideMotor.setPower(1);
+        //verticalSlideMotor.setPower(1);
+
+        verticalslideMotor2.setTargetPosition(highChamberPosition);
+        verticalslideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //verticalslideMotor2.setPower(1);
+    }
+
+    public double getTarget(){
+        return this.target;
     }
 
     public boolean IsAtHighChamber() {
         return verticalSlideMotor.getCurrentPosition() > (highChamberPosition - 50);
     }
+
 
     public void lowBasket() {
         /*verticalSlideMotor.setTargetPosition(lowBasketPosition);
@@ -141,7 +174,7 @@ public class SlidesSubsystem extends SubsystemBase {
     }
 
     public boolean IsAtHighBasket() {
-        return verticalSlideMotor.getCurrentPosition() > (highBasketPosition - 50);
+        return verticalSlideMotor.getCurrentPosition() > (highBasketPosition - 200);
     }
 
     public void setSlideTarget(double target) {
@@ -149,10 +182,19 @@ public class SlidesSubsystem extends SubsystemBase {
         slidePIDF.setSetPoint(target);
     }
 
+    private Telemetry tele;
+
+    public void setTelemtary(Telemetry t){
+        this.tele = t;
+    }
     public void autoUpdateSlides() {
         double power = slidePIDF.calculate(verticalSlideMotor.getCurrentPosition(), target);
         verticalSlideMotor.setPower(power);
-
+        verticalslideMotor2.setPower(power);
+        if(this.tele != null){
+            this.tele.addData("Vertical Slides", verticalSlideMotor.getCurrentPosition());
+            this.tele.update();
+        }
     }
 
     @Override

@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -15,14 +13,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.AscentCloseHooksCommand;
-import org.firstinspires.ftc.teamcode.commands.AscentLowRungCommand;
 import org.firstinspires.ftc.teamcode.commands.AscentOpenHooksCommand;
 import org.firstinspires.ftc.teamcode.commands.AscentStowCommand;
 import org.firstinspires.ftc.teamcode.commands.CloseGripplerCommand;
 import org.firstinspires.ftc.teamcode.commands.ColourAwareIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.DefaultDrive;
-import org.firstinspires.ftc.teamcode.commands.DesiredColourBlueCommand;
-import org.firstinspires.ftc.teamcode.commands.DesiredColourNeutralCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeOffCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotDownCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotUpCommand;
@@ -47,9 +42,9 @@ import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 
 import java.util.function.BooleanSupplier;
 
-@TeleOp(name = "Blue TeleOp")
-@Disabled
-public class BlueTeleOp extends CommandOpMode {
+//@TeleOp(name = "Common TeleOp")
+
+public class CommonTeleOp extends CommandOpMode {
 
     private DriveSubsystem m_drive;
     private DefaultDrive m_driveCommand;
@@ -65,6 +60,19 @@ public class BlueTeleOp extends CommandOpMode {
 
     private double driveSpeed = 1;
 
+    private IntakeSubsystem.SampleColour sampleColour = IntakeSubsystem.SampleColour.AUTO_ANY;
+
+    public CommonTeleOp(IntakeSubsystem.SampleColour color){
+        this.sampleColour = color;
+    }
+
+    public CommonTeleOp(){
+
+    }
+
+    public void setDesiredColour(IntakeSubsystem.SampleColour color){
+        this.sampleColour = color;
+    }
 
     @Override
     public void initialize() {
@@ -76,7 +84,7 @@ public class BlueTeleOp extends CommandOpMode {
 
         intakeSubsystem = new IntakeSubsystem(hardwareMap, telemetry);
         //SETUP the starting COLOUR:
-        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);
+        intakeSubsystem.setDesiredColour(this.sampleColour);
 
         transferSubsystem = new TransferSubsystem(hardwareMap);
 
@@ -221,7 +229,10 @@ public class BlueTeleOp extends CommandOpMode {
                         }),
                         new ConditionalCommand(
                                 new ConditionalCommand(
-                                        new IntakeSlidesInCommand(intakeSubsystem, transferSubsystem),
+                                        new SequentialCommandGroup(
+                                                new IntakePivotUpCommand(intakeSubsystem,robotState),
+                                                new IntakeSlidesInCommand(intakeSubsystem, transferSubsystem)
+                                        ),
                                         new IntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState),
 
                                         () -> m_driveOperator.getGamepadButton(GamepadKeys.Button.A).get()
@@ -229,6 +240,7 @@ public class BlueTeleOp extends CommandOpMode {
                                 new InstantCommand(), // do nothing, might want to intake again
                                 ()-> intakeSubsystem.hasItemInIntake()
                         )
+
                 )
 
         );
@@ -319,7 +331,7 @@ public class BlueTeleOp extends CommandOpMode {
                                     new TransferFlipCommand(transferSubsystem)
                             ),
                             new InstantCommand(()-> {
-                                driveSpeed = 0.5;
+                                driveSpeed = 1;
                                 robotState.slidePosition = RobotStateSubsystem.SlideHeight.LOW;
                             })
                         ),
@@ -415,7 +427,8 @@ public class BlueTeleOp extends CommandOpMode {
                         new InstantCommand(()->{
                             if(robotState.ptoState == RobotStateSubsystem.PTOState.ENABLED) {
                                 telemetry.addData("PTO", "enabled");
-
+                                //depower the hook servos
+                                ascentSubsystem.disableServos();
                                 m_drive.drive(0,1,0,1);
 
                             }else{
@@ -424,7 +437,11 @@ public class BlueTeleOp extends CommandOpMode {
                             telemetry.update();
 
                         })
-        );
+        ).whenInactive(new InstantCommand(() ->{
+            if(robotState.ptoState == RobotStateSubsystem.PTOState.ENABLED) {
+               m_drive.drive(0, 0, 0, 0);
+            }
+        }));
 
     }
 }

@@ -94,37 +94,37 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
 
         dropOffPreload = drive.actionBuilder(drive.pose)
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(dropOffPose, Math.toRadians(90))
+                .splineToLinearHeading(dropOffPose, Math.toRadians(90), new TranslationalVelConstraint(100))
                 .endTrajectory();
 
-        Pose2d firstSamplePose = new Pose2d(23,-56,Math.toRadians(58));
+        Pose2d firstSamplePose = new Pose2d(23,-52,Math.toRadians(58));
 
         firstSample = dropOffPreload.fresh()
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(firstSamplePose,Math.toRadians(0))
                 .endTrajectory();
 
-        Vector2d firstSampleSlowPose = new Vector2d(25,-54);
+        Vector2d firstSampleSlowPose = new Vector2d(25,-43);
 
         firstSampleSlow = firstSample.fresh()
-                .strafeTo(firstSampleSlowPose, new TranslationalVelConstraint(70))
+                .strafeTo(firstSampleSlowPose, new TranslationalVelConstraint(15))
                 .endTrajectory();
 
         firstSampleDrop = firstSampleSlow.fresh()
                 .turn(Math.toRadians(-90))
                 .endTrajectory();
 
-        Pose2d secondSamplePose = new Pose2d(32,-58,Math.toRadians(58));
+        Pose2d secondSamplePose = new Pose2d(35,-52,Math.toRadians(58));
 
         secondSample = firstSampleDrop.fresh()
                  .setTangent(Math.toRadians(58))
                  .splineToLinearHeading(secondSamplePose, Math.toRadians(58))
                  .endTrajectory();
 
-        Vector2d secondSampleSlowPose = new Vector2d(35,-54);
+        Vector2d secondSampleSlowPose = new Vector2d(35,-43);
 
         secondSampleSlow = secondSample.fresh()
-                .strafeTo(secondSampleSlowPose, new TranslationalVelConstraint(60))
+                .strafeTo(secondSampleSlowPose, new TranslationalVelConstraint(15))
                 .endTrajectory();
 
         secondSampleDrop = secondSampleSlow.fresh()
@@ -132,7 +132,7 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                 .endTrajectory();
 
         //first specimen
-        Pose2d firstSpecimenPickupPose = new Pose2d(11,-45,Math.toRadians(-45));
+        Pose2d firstSpecimenPickupPose = new Pose2d(13,-45,Math.toRadians(-45));
         Vector2d firstSpecimenPickupPoseSlow = new Vector2d(15, -49);
 
         firstSpecimenPickup = secondSampleDrop.fresh()
@@ -155,7 +155,7 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                 .endTrajectory();
 
         //second specimen
-        Pose2d secondSpecimenPickupPose = new Pose2d(11,-45,Math.toRadians(-45));
+        Pose2d secondSpecimenPickupPose = new Pose2d(13,-45,Math.toRadians(-45));
         Vector2d secondSpecimenPickupPoseSlow = new Vector2d(15, -49);
 
 
@@ -173,7 +173,7 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                 .endTrajectory();
 
         //third specimen
-        Pose2d thirdSpecimenPickupPose = new Pose2d(11,-44,Math.toRadians(-45));
+        Pose2d thirdSpecimenPickupPose = new Pose2d(13,-44,Math.toRadians(-45));
         Vector2d thirdSpecimenPickupPoseSlow = new Vector2d(15, -49);
 
 
@@ -274,9 +274,15 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                                 new ActionCommand(firstSpecimenDrop.build(), new ArraySet<>()),
                                 new AutoIntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState)
                             ),
-                            new TransferFlipCommand(transferSubsystem),
-                            new WaitCommand(500),
+                            new ConditionalCommand(
+                                    new SequentialCommandGroup(
+                                            new TransferFlipCommand(transferSubsystem),
+                                            new WaitCommand(500)
+                                    ),
+                                    new WaitCommand(1),
+                                    ()-> intakeSubsystem.hasItemInIntake()),
                             new OpenGripplerCommand(transferSubsystem),
+                           // new OuttakeOnCommand(intakeSubsystem),
                             new TransferStowCommand(transferSubsystem),
                             new IntakePoopChuteOpenCommand(intakeSubsystem),
                             new IntakeSlidesOutCommand(intakeSubsystem),
@@ -289,9 +295,15 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                                     new ActionCommand(secondSpecimenDrop.build(), new ArraySet<>()),
                                     new AutoIntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState)
                             ),
-                            new TransferFlipCommand(transferSubsystem),
-                            new WaitCommand(500),
+                            new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                    new TransferFlipCommand(transferSubsystem),
+                                    new WaitCommand(500)
+                                ),
+                                new WaitCommand(1),
+                                    ()-> intakeSubsystem.hasItemInIntake()),
                             new OpenGripplerCommand(transferSubsystem),
+                           // new OuttakeOnCommand(intakeSubsystem),
                             new TransferStowCommand(transferSubsystem),
                             new IntakePoopChuteOpenCommand(intakeSubsystem),
                             new IntakeSlidesOutCommand(intakeSubsystem),
@@ -304,9 +316,15 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                                     new ActionCommand(thirdSpecimenDrop.build(), new ArraySet<>()),
                                     new AutoIntakeCommandGroup(intakeSubsystem, transferSubsystem, robotState)
                             ),
-                            new TransferFlipCommand(transferSubsystem),
-                            new WaitCommand(500),
+                            new ConditionalCommand(
+                                    new SequentialCommandGroup(
+                                            new TransferFlipCommand(transferSubsystem),
+                                            new WaitCommand(500)
+                                    ),
+                                    new WaitCommand(1),
+                                    ()-> intakeSubsystem.hasItemInIntake()),
                             new OpenGripplerCommand(transferSubsystem),
+                           // new OuttakeOnCommand(intakeSubsystem),
                             new TransferStowCommand(transferSubsystem),
                             new IntakePoopChuteOpenCommand(intakeSubsystem),
 

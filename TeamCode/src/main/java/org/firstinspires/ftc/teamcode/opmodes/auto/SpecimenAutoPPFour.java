@@ -100,7 +100,8 @@ public class SpecimenAutoPPFour extends CommandOpMode {
                 .splineToLinearHeading(dropOffPose, Math.toRadians(90))
                 .endTrajectory();
 
-        Pose2d firstSamplePose = new Pose2d(23,-56,Math.toRadians(58));
+        //y is closer to the middle (0 at middle), x is along the wall
+        Pose2d firstSamplePose = new Pose2d(23,-50,Math.toRadians(58));
 
         firstSample = dropOffPreload.fresh()
                 .setTangent(Math.toRadians(-90))
