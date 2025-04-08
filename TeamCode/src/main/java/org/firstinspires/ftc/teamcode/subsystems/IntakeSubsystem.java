@@ -101,7 +101,15 @@ public class IntakeSubsystem extends SubsystemBase {
         intakePivotUp();
         intakeSlidesIn();
         poopChuteClose();
+        sweeperIn();
+    }
 
+    public void sweeperOut(){
+        sweeper.setPosition(0.8);
+    }
+
+    public void sweeperIn(){
+        sweeper.setPosition(0);
     }
 
     public void Intake() {

@@ -324,7 +324,7 @@ public class CommonTeleOp extends CommandOpMode {
 
         //move the slides to the low basket - but only when in the high position
         m_driveDriver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                new ConditionalCommand(
+                //new ConditionalCommand(
                         new SequentialCommandGroup(
                             new ParallelCommandGroup(
                                     new SlidesLowBasketCommand(slidesSubsystem),
@@ -334,12 +334,9 @@ public class CommonTeleOp extends CommandOpMode {
                                 driveSpeed = 1;
                                 robotState.slidePosition = RobotStateSubsystem.SlideHeight.LOW;
                             })
-                        ),
-                        new InstantCommand(() -> {
-                            driveSpeed = 1;
-                        }),
-                        () -> robotState.slidePosition == RobotStateSubsystem.SlideHeight.HIGH
-                )
+                        )
+                //        () -> robotState.slidePosition == RobotStateSubsystem.SlideHeight.HIGH
+              //  )
         );
 
         //SECONDARY CONTROLLER
@@ -364,27 +361,22 @@ public class CommonTeleOp extends CommandOpMode {
                         new InstantCommand(()->{
                             telemetry.addData("Hooks", "Closed");
                             telemetry.update();
-                        }),
-                    new AscentCloseHooksCommand(ascentSubsystem)
+                        })
+                  //  new AscentCloseHooksCommand(ascentSubsystem)
 
                 )
         );
 
-        //go for the climb - disable the servos to prevent breakage.
+
         m_driveOperator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new SequentialCommandGroup(
-                        new IntakeSlidesInAscentCommand(intakeSubsystem, transferSubsystem),
-                        new ParallelCommandGroup(
-                               // new AscentLowRungCommand(ascentSubsystem),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(150),
-                                        new InstantCommand(() ->{
-                                            ascentSubsystem.disableServos();
-                                        })
-                                )),
-                        new WaitCommand(200),
-                        new SlidesStowCommand(slidesSubsystem),
-                        new IntakePivotUpCommand(intakeSubsystem, robotState)
+                       new InstantCommand(() -> {
+                           intakeSubsystem.sweeperOut();
+                       }),
+                        new WaitCommand(300),
+                        new InstantCommand(() -> {
+                            intakeSubsystem.sweeperIn();
+                        })
 
                 )
         );
@@ -442,6 +434,8 @@ public class CommonTeleOp extends CommandOpMode {
                m_drive.drive(0, 0, 0, 0);
             }
         }));
+
+
 
     }
 }

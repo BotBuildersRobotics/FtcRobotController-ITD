@@ -43,7 +43,7 @@ import org.firstinspires.ftc.teamcode.utils.PinpointDrive;
 import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 
 @Autonomous(name = "SPEC | THREE | PARK", group = "Autonomous")
-
+@Disabled
 public class BasketAutoPP extends CommandOpMode {
 
     TrajectoryActionBuilder dropOffPreload;

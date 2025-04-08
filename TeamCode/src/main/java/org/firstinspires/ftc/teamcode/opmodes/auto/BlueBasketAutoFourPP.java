@@ -10,23 +10,18 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.ActionCommand;
-import org.firstinspires.ftc.teamcode.commands.AscentOpenHooksCommand;
 import org.firstinspires.ftc.teamcode.commands.CloseGripplerCommand;
 import org.firstinspires.ftc.teamcode.commands.ColourAwareIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeOnCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakePivotDownCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakePivotUpCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesInCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeSlidesOutCommand;
 import org.firstinspires.ftc.teamcode.commands.OpenGripplerCommand;
-import org.firstinspires.ftc.teamcode.commands.groups.AutoIntakeCommandGroup;
 import org.firstinspires.ftc.teamcode.commands.groups.DeliveryCommandGroup;
 import org.firstinspires.ftc.teamcode.commands.groups.DeliveryResetCommandGroup;
 import org.firstinspires.ftc.teamcode.commands.groups.IntakeCommandGroup;
@@ -39,8 +34,8 @@ import org.firstinspires.ftc.teamcode.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.utils.PinpointDrive;
 import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 
-@Autonomous(name = "RED BASKET | FOUR | SUB", group = "Autonomous")
-public class BasketAutoFourPP extends CommandOpMode {
+@Autonomous(name = "BLUE BASKET | FOUR | SUB", group = "Autonomous")
+public class BlueBasketAutoFourPP extends CommandOpMode {
 
     TrajectoryActionBuilder dropOffPreload;
     TrajectoryActionBuilder apSample; //ap = alliance preload
@@ -94,7 +89,7 @@ public class BasketAutoFourPP extends CommandOpMode {
         slidesSubsystem = new SlidesSubsystem(hardwareMap);
         ascentSubsystem = new AscentSubsystem(hardwareMap);
 
-        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.RED_OR_NEUTRAL);
+        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);
 
 
         // instantiate your MecanumDrive at a particular pose.

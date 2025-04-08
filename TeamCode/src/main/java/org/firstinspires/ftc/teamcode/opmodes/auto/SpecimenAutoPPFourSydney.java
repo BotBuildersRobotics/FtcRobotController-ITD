@@ -84,6 +84,7 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
         slidesSubsystem = new SlidesSubsystem(hardwareMap);
         ascentSubsystem = new AscentSubsystem(hardwareMap);
 
+        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);
 
         // instantiate your MecanumDrive at a particular pose.
         PinpointDrive drive = new PinpointDrive(hardwareMap,
@@ -107,7 +108,7 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
         Vector2d firstSampleSlowPose = new Vector2d(25,-43);
 
         firstSampleSlow = firstSample.fresh()
-                .strafeTo(firstSampleSlowPose, new TranslationalVelConstraint(15))
+                .strafeTo(firstSampleSlowPose, new TranslationalVelConstraint(5))
                 .endTrajectory();
 
         firstSampleDrop = firstSampleSlow.fresh()
@@ -121,24 +122,24 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                  .splineToLinearHeading(secondSamplePose, Math.toRadians(58))
                  .endTrajectory();
 
-        Vector2d secondSampleSlowPose = new Vector2d(35,-43);
+        Vector2d secondSampleSlowPose = new Vector2d(35,-40);
 
         secondSampleSlow = secondSample.fresh()
-                .strafeTo(secondSampleSlowPose, new TranslationalVelConstraint(15))
+                .strafeTo(secondSampleSlowPose, new TranslationalVelConstraint(5))
                 .endTrajectory();
 
         secondSampleDrop = secondSampleSlow.fresh()
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(-100))
                 .endTrajectory();
 
         //first specimen
-        Pose2d firstSpecimenPickupPose = new Pose2d(13,-45,Math.toRadians(-45));
-        Vector2d firstSpecimenPickupPoseSlow = new Vector2d(15, -49);
+        Pose2d firstSpecimenPickupPose = new Pose2d(13,-42,Math.toRadians(-45));
+        Vector2d firstSpecimenPickupPoseSlow = new Vector2d(17, -45);
 
         firstSpecimenPickup = secondSampleDrop.fresh()
                 .setTangent(Math.toRadians(180))
                 .splineToLinearHeading(firstSpecimenPickupPose, Math.toRadians(-45))
-                .strafeTo(firstSpecimenPickupPoseSlow, new TranslationalVelConstraint(10))
+                .strafeTo(firstSpecimenPickupPoseSlow, new TranslationalVelConstraint(20))
                 .endTrajectory();
 
         Pose2d firstSpecimenDropPose = new Pose2d(-3.5, -32.5, Math.toRadians(-90));
@@ -155,14 +156,14 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                 .endTrajectory();
 
         //second specimen
-        Pose2d secondSpecimenPickupPose = new Pose2d(13,-45,Math.toRadians(-45));
-        Vector2d secondSpecimenPickupPoseSlow = new Vector2d(15, -49);
+        Pose2d secondSpecimenPickupPose = new Pose2d(13,-42,Math.toRadians(-45));
+        Vector2d secondSpecimenPickupPoseSlow = new Vector2d(17, -45);
 
 
         secondSpecimenPickup = firstSpecimenDrop.fresh()
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(secondSpecimenPickupPose, Math.toRadians(-45))
-                .strafeTo(secondSpecimenPickupPoseSlow, new TranslationalVelConstraint(10))
+                .strafeTo(secondSpecimenPickupPoseSlow, new TranslationalVelConstraint(20))
                 .endTrajectory();
 
         Pose2d secondSpecimenDropPose = new Pose2d(-5, -32.5, Math.toRadians(-90));
@@ -173,8 +174,8 @@ public class SpecimenAutoPPFourSydney extends CommandOpMode {
                 .endTrajectory();
 
         //third specimen
-        Pose2d thirdSpecimenPickupPose = new Pose2d(13,-44,Math.toRadians(-45));
-        Vector2d thirdSpecimenPickupPoseSlow = new Vector2d(15, -49);
+        Pose2d thirdSpecimenPickupPose = new Pose2d(13,-42,Math.toRadians(-45));
+        Vector2d thirdSpecimenPickupPoseSlow = new Vector2d(17, -45);
 
 
         thirdSpecimenPickup = secondSpecimenDrop.fresh()

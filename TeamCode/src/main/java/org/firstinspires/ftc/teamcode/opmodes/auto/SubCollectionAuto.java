@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.utils.PinpointDrive;
 
 @Autonomous(name = "Test Sub Collection", group = "Autonomous")
-//@Disabled
+@Disabled
 public class SubCollectionAuto extends CommandOpMode {
 
     IntakeSubsystem intakeSubsystem;

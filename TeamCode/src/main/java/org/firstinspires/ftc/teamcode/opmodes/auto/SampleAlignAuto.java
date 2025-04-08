@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.utils.PinpointDrive;
 import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 
 @Autonomous(name = "SampleAlign", group = "Autonomous")
-//@Disabled
+@Disabled
 public class SampleAlignAuto extends CommandOpMode {
 
     IntakeSubsystem intakeSubsystem;
