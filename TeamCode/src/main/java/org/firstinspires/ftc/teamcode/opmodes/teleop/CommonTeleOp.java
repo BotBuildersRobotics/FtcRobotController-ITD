@@ -415,7 +415,6 @@ public class CommonTeleOp extends CommandOpMode {
                 return m_driveOperator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5;
             }
         }).whileActiveContinuous(
-
                         new InstantCommand(()->{
                             if(robotState.ptoState == RobotStateSubsystem.PTOState.ENABLED) {
                                 telemetry.addData("PTO", "enabled");

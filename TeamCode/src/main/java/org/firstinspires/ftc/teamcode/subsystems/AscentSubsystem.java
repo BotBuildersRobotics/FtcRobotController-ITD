@@ -31,7 +31,7 @@ public class AscentSubsystem extends SubsystemBase {
     private double ptoDriveRightPos = 0.30;
 
     private double ptoClimbLeftPos = 0.65;//0.83;
-    private double ptoClimbRightPos = 0.65;//0.84;
+    private double ptoClimbRightPos = 0.84;
 
     public AscentSubsystem(final HardwareMap hMap) {
 

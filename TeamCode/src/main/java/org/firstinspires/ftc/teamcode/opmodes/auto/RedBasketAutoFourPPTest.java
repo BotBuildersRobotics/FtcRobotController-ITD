@@ -34,8 +34,8 @@ import org.firstinspires.ftc.teamcode.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.utils.PinpointDrive;
 import org.firstinspires.ftc.teamcode.utils.PoseStorage;
 
-@Autonomous(name = "BLUE BASKET | FOUR | SUB", group = "Autonomous")
-public class BlueBasketAutoFourPP extends CommandOpMode {
+@Autonomous(name = "RED BASKET | FOUR | TEST", group = "Autonomous")
+public class RedBasketAutoFourPPTest extends CommandOpMode {
 
     TrajectoryActionBuilder dropOffPreload;
     TrajectoryActionBuilder apSample; //ap = alliance preload
@@ -89,7 +89,7 @@ public class BlueBasketAutoFourPP extends CommandOpMode {
         slidesSubsystem = new SlidesSubsystem(hardwareMap);
         ascentSubsystem = new AscentSubsystem(hardwareMap);
 
-        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);
+        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.RED_OR_NEUTRAL);
 
 
         // instantiate your MecanumDrive at a particular pose.
@@ -99,7 +99,7 @@ public class BlueBasketAutoFourPP extends CommandOpMode {
         //pose to the submersible wall
         //X is up and down the wall
         //Y is into the submersible
-        Pose2d dropOffPose = new Pose2d(-69, -52, Math.toRadians(-290));
+        Pose2d dropOffPose = new Pose2d(-71, -53, Math.toRadians(-290));
 
         dropOffPreload = drive.actionBuilder(drive.pose)
                 .setTangent(Math.toRadians(-90))
@@ -193,7 +193,7 @@ public class BlueBasketAutoFourPP extends CommandOpMode {
                         .endTrajectory();
 
         slidesSubsystem.setTelemtary(telemetry);
-        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.BLUE_OR_NEUTRAL);
+        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.RED_OR_NEUTRAL);
         intakeSubsystem.intakePivotDown();
         transferSubsystem.closeGrippler();
         ascentSubsystem.PTODriveEnabled();

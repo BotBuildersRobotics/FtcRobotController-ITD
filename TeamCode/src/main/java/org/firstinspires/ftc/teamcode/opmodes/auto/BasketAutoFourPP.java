@@ -198,7 +198,7 @@ public class BasketAutoFourPP extends CommandOpMode {
                         .endTrajectory();
 
         slidesSubsystem.setTelemtary(telemetry);
-        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.NEUTRAL);
+        intakeSubsystem.setDesiredColour(IntakeSubsystem.SampleColour.RED_OR_NEUTRAL);
         intakeSubsystem.intakePivotDown();
         transferSubsystem.closeGrippler();
         ascentSubsystem.PTODriveEnabled();
